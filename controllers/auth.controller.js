@@ -40,15 +40,10 @@ exports.getUser = async (req, res) => {
     return res.json(user);
 }
 
-exports.logout = async (req, res) => {
-    let token = req.headers.authorization;
-    if (token.startsWith('Bearer ')) {
-        token = token.slice(7, token.length);
-    }
-    const decoded = await jwt.verifyToken(token.trim());
-
+exports.logout = async (req, res) => { 
+    const token = req.token;
     const now = new Date();
-    const expire = new Date(decoded.exp);
+    const expire = new Date(req.user.exp);
     const milliseconds = now.getTime() - expire.getTime();
     /* ----------------------------- BlackList Token ---------------------------- */
     await cache.set(token, token, milliseconds);
