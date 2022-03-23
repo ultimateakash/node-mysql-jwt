@@ -10,6 +10,6 @@ router.post('/login',    validate('login'),     authController.login);
 router.get('/user',      authGuard,             authController.getUser);
 router.get('/logout',    authGuard,             authController.logout);
 
-router.get('*',  (req, res) => res.status(400).json({'error': 'Bad Request.'}))
+router.all('*',  (req, res) => res.status(400).json({'error': 'Bad Request.'}))
 
 module.exports = router;
