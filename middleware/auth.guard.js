@@ -10,13 +10,14 @@ module.exports = async (req, res, next) => {
 
     if (token) {
         try {
+            token = token.trim();
             /* ---------------------- Check For Blacklisted Tokens ---------------------- */
-            const isBlackListed = await cache.get(token.trim());
+            const isBlackListed = await cache.get(token);
             if (isBlackListed) {
                 return res.status(401).json({ error: 'Unauthorized' });
             }
             
-            const decoded = await jwt.verifyToken(token.trim());
+            const decoded = await jwt.verifyToken(token);
             req.user = decoded;
             req.token = token;
             next();
