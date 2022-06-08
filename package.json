@@ -1,5 +1,5 @@
 {
-  "name": "node-jwt",
+  "name": "node-mysql-jwt",
   "version": "0.0.0",
   "private": true,
   "scripts": {
