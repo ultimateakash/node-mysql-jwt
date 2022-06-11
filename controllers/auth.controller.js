@@ -5,6 +5,14 @@ const jwt = require('../utils/jwt');
 const bcrypt = require('bcrypt');
 
 exports.register = async (req, res) => {
+    const isExist = await User.findOne({
+        where:{
+            email: req.body.email
+        }
+    })
+    if(isExist) {
+        return res.status(400).json({ error: 'Email already exists.' });
+    }
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
 
     const user = await User.create({
