@@ -14,7 +14,7 @@ module.exports = async (req, res, next) => {
             /* ---------------------- Check For Blacklisted Tokens ---------------------- */
             const isBlackListed = await cache.get(token);
             if (isBlackListed) {
-                return res.status(401).json({ error: 'Unauthorized' });
+                return res.status(401).json({ message: 'Unauthorized' });
             }
             
             const decoded = await jwt.verifyToken(token);
@@ -23,9 +23,9 @@ module.exports = async (req, res, next) => {
             next();
 
         } catch (error) { 
-            return res.status(401).json({ error: 'Unauthorized' });
+            return res.status(401).json({ message: 'Unauthorized' });
         }
     } else {
-        return res.status(400).json({ error: 'Authorization header is missing.' })
+        return res.status(400).json({ message: 'Authorization header is missing.' })
     }
 }

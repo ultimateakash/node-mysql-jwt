@@ -6,6 +6,6 @@
 2. Update Database Credentials
 3. Create users table (node-jwt.sql)
 4. Update `JWT_SECRET` Key 
-5. Test API's in Postman
+5. `npm start`
 
 Note:- You can use any random string as `JWT_SECRET`

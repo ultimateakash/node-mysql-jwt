@@ -11,7 +11,7 @@ exports.register = async (req, res) => {
         }
     })
     if(isExist) {
-        return res.status(400).json({ error: 'Email already exists.' });
+        return res.status(400).json({ message: 'Email already exists.' });
     }
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
 
@@ -40,7 +40,7 @@ exports.login = async (req, res) => {
             });
         }
     }
-    return res.status(401).json({ error: 'Unauthorized' });
+    return res.status(400).json({ message: 'Unauthorized' });
 }
 
 exports.getUser = async (req, res) => {
