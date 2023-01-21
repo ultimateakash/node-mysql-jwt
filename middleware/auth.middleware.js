@@ -1,5 +1,5 @@
-const jwt = require('../utils/jwt');
-const cache = require('../utils/cache');
+const cache = require('../utils/cache.util');
+const jwt = require('../utils/jwt.util');
 
 module.exports = async (req, res, next) => {
 

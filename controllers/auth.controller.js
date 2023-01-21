@@ -1,11 +1,11 @@
-const User = require('../models/user.model');
-const cache = require('../utils/cache');
-const jwtConfig = require('../config/jwt');
-const jwt = require('../utils/jwt');
+const UserModel = require('../models/user.model');
+const jwtConfig = require('../config/jwt.config');
+const cache = require('../utils/cache.util');
+const jwt = require('../utils/jwt.util');
 const bcrypt = require('bcrypt');
 
 exports.register = async (req, res) => {
-    const isExist = await User.findOne({
+    const isExist = await UserModel.findOne({
         where:{
             email: req.body.email
         }
@@ -15,7 +15,7 @@ exports.register = async (req, res) => {
     }
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
 
-    const user = await User.create({
+    const user = await UserModel.create({
         name: req.body.name,
         email: req.body.email,
         password: hashedPassword
@@ -24,7 +24,7 @@ exports.register = async (req, res) => {
 }
 
 exports.login = async (req, res) => {
-    const user = await User.findOne({
+    const user = await UserModel.findOne({
         where: {
             email: req.body.email
         }
@@ -44,7 +44,7 @@ exports.login = async (req, res) => {
 }
 
 exports.getUser = async (req, res) => {
-    const user = await User.findByPk(req.user.id);
+    const user = await UserModel.findByPk(req.user.id);
     return res.json(user);
 }
 
