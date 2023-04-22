@@ -1,16 +1,16 @@
-module.exports = (schema) => (req, res, next) => {
+module.exports = (schema) => async (req, res, next) => {
     if (schema) {
-        const options = {
-            errors: {
-                wrap: { label: '' }
-            },
-            abortEarly: false
-        }
-        const result = schema.validate((req.method == 'GET' ? req.query : req.body), options);
-        if (result.error) {
-            const { details } = result.error;
-            const message = details.length ? details[0].message : 'Invalid payload.'
-            return res.status(400).json({ message });
+        try {
+            const options = {
+                errors: {
+                    wrap: { label: '' }
+                },
+                abortEarly: true
+            }
+            const body = (req.method == 'GET') ? req.query : req.body;
+            await schema.validateAsync(body, options);
+        } catch (error) {
+            return res.status(400).json({ message: error.message });
         }
     }
     next();

@@ -1,38 +1,34 @@
-const UserModel = require('../models/user.model');
+const AuthService = require('../services/auth.service');
 const jwtConfig = require('../config/jwt.config');
-const cache = require('../utils/cache.util');
-const jwt = require('../utils/jwt.util');
-const bcrypt = require('bcrypt');
+const bcryptUtil = require('../utils/bcrypt.util');
+const jwtUtil = require('../utils/jwt.util');
 
-exports.register = async (req, res) => {
-    const isExist = await UserModel.findOne({
-        where:{
-            email: req.body.email
-        }
-    })
+exports.register = async (req, res) => { 
+    const isExist = await AuthService.findUserByEmail(req.body.email);
     if(isExist) {
-        return res.status(400).json({ message: 'Email already exists.' });
+        return res.status(400).json({ 
+            message: 'Email already exists.' 
+        });
     }
-    const hashedPassword = await bcrypt.hash(req.body.password, 10);
-
-    const user = await UserModel.create({
+    const hashedPassword = await bcryptUtil.createHash(req.body.password);
+    const userData = {
         name: req.body.name,
         email: req.body.email,
         password: hashedPassword
+    }
+    const user = await AuthService.createUser(userData);
+    return res.json({
+        data: user,
+        message: 'User registered successfully.'
     });
-    return res.json(user);
 }
 
-exports.login = async (req, res) => {
-    const user = await UserModel.findOne({
-        where: {
-            email: req.body.email
-        }
-    });
+exports.login = async (req, res) => { 
+    const user = await AuthService.findUserByEmail(req.body.email); 
     if (user) {
-        const isMatched = await bcrypt.compare(req.body.password, user.password);
+        const isMatched = await bcryptUtil.compareHash(req.body.password, user.password);
         if (isMatched) {
-            const token = await jwt.createToken({ id: user.id });
+            const token = await jwtUtil.createToken({ id: user.id });
             return res.json({
                 access_token: token,
                 token_type: 'Bearer',
@@ -40,21 +36,18 @@ exports.login = async (req, res) => {
             });
         }
     }
-    return res.status(400).json({ message: 'Unauthorized' });
+    return res.status(400).json({ message: 'Unauthorized.' });
 }
 
 exports.getUser = async (req, res) => {
-    const user = await UserModel.findByPk(req.user.id);
-    return res.json(user);
+    const user = await AuthService.findUserById(req.user.id);  
+    return res.json({
+        data: user,
+        message: 'Success.'
+    });
 }
 
-exports.logout = async (req, res) => { 
-    const token = req.token;
-    const now = new Date();
-    const expire = new Date(req.user.exp);
-    const milliseconds = now.getTime() - expire.getTime();
-    /* ----------------------------- BlackList Token ---------------------------- */
-    await cache.set(token, token, milliseconds);
-
-    return res.json({ message: 'Logged out successfully' });
+exports.logout = async (req, res) => {    
+    await AuthService.logoutUser(req.token, req.user.exp);  
+    return res.json({ message: 'Logged out successfully.' });
 }
