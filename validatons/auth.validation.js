@@ -1,7 +1,7 @@
 const Joi = require('joi');
 const passwordRegex = new RegExp(/(?=.*\d)(?=.*[a-z])(?=.*[A-Z])/);
 
-const validatePassword = (value, helper) => {  
+const validatePassword = (value) => {  
     if(!passwordRegex.test(String(value))) { 
         throw new Error('Password should contains a lowercase, a uppercase character and a digit.')
     }
